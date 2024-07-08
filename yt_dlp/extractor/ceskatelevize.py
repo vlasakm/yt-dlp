@@ -1,8 +1,8 @@
 import json
 import re
-import urllib.parse
 
 from .common import InfoExtractor
+from ..compat import compat_urllib_parse_unquote, compat_urllib_parse_urlparse
 from ..networking import Request
 from ..utils import (
     ExtractorError,
@@ -118,7 +118,7 @@ class CeskaTelevizeIE(InfoExtractor):
     def _real_extract(self, url):
         playlist_id = self._match_id(url)
         webpage, urlh = self._download_webpage_handle(url, playlist_id)
-        parsed_url = urllib.parser.urlparse(urlh.url)
+        parsed_url = compat_urllib_parse_urlparse(urlh.url)
         site_name = self._og_search_property('site_name', webpage, fatal=False, default='Česká televize')
         playlist_title = self._og_search_title(webpage, default=None)
         if site_name and playlist_title:
@@ -231,7 +231,7 @@ class CeskaTelevizeIE(InfoExtractor):
             if playlist_url:
                 if playlist_url == 'error_region':
                     raise ExtractorError(NOT_AVAILABLE_STRING, expected=True)
-                req = Request(urllib.parse.unquote(playlist_url))
+                req = Request(compat_urllib_parse_unquote(playlist_url))
                 req.headers['Referer'] = url
                 playlist = self._download_json(req, playlist_id, fatal=False)
                 if not playlist:
